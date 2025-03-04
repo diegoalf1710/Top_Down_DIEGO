@@ -26,7 +26,9 @@ public class NetworkManager : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Unido a una sala.");
-        // Instanciar al jugador en la escena
-        PhotonNetwork.Instantiate("Player", Vector3.zero, Quaternion.identity);
+        // Obtener una posición de spawn aleatoria
+        Vector3 spawnPosition = SpawnPointManager.Instance.GetRandomSpawnPoint();
+        // Instanciar al jugador en el punto de spawn
+        PhotonNetwork.Instantiate("Player", spawnPosition, Quaternion.identity);
     }
 }

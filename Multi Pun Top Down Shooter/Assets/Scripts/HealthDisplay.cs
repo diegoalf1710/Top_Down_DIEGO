@@ -5,7 +5,7 @@ using Photon.Pun;
 public class HealthDisplay : MonoBehaviour
 {
     [Header("References")]
-    private PlayerHealth playerHealth;
+    public PlayerHealth playerHealth;
     public TextMeshProUGUI healthText;
 
     [Header("Display Settings")]
@@ -17,10 +17,17 @@ public class HealthDisplay : MonoBehaviour
     {
         // Buscar el jugador local
         FindLocalPlayer();
+        // Intentar encontrar el jugador cada 0.5 segundos si no se encuentra inicialmente
+        if (playerHealth == null)
+        {
+            InvokeRepeating("FindLocalPlayer", 0.5f, 0.5f);
+        }
     }
 
     void FindLocalPlayer()
     {
+        if (playerHealth != null) return; // Si ya tenemos el jugador, no hacer nada
+
         // Buscar todos los jugadores en la escena
         PlayerHealth[] players = FindObjectsOfType<PlayerHealth>();
         
@@ -30,9 +37,15 @@ public class HealthDisplay : MonoBehaviour
             if (player.photonView.IsMine)
             {
                 playerHealth = player;
-                // Suscribirse al evento de cambio de vida
-                playerHealth.onHealthChanged += UpdateHealthDisplay;
-                Debug.Log("Jugador local encontrado y suscrito al evento de cambio de vida.");
+                playerHealth.onHealthChanged -= UpdateHealthDisplay; // Eliminar suscripción previa si existe
+                playerHealth.onHealthChanged += UpdateHealthDisplay; // Suscribirse al evento
+                
+                // Actualizar el display inmediatamente con la vida actual
+                UpdateHealthDisplay(player.currentHealth);
+                
+                // Cancelar la búsqueda repetida si estaba activa
+                CancelInvoke("FindLocalPlayer");
+                Debug.Log("Jugador local encontrado y display actualizado");
                 break;
             }
         }
@@ -45,12 +58,25 @@ public class HealthDisplay : MonoBehaviour
 
     private void UpdateHealthDisplay(int currentHealth)
     {
-        if (healthText != null)
+        if (healthText == null) return;
+
+        // Actualizar el texto
+        healthText.text = $"Vida: {currentHealth}";
+
+        // Calcular el color basado en la vida actual
+        float healthPercentage = currentHealth / 100f; // Asumiendo que 100 es la vida máxima
+        healthText.color = Color.Lerp(lowHealthColor, fullHealthColor, healthPercentage);
+
+        if (currentHealth <= lowHealthThreshold)
         {
-            // Actualizar el texto con la vida actual
-            healthText.text = $"Vida: {currentHealth}";
-            Debug.Log($"Vida actualizada: {currentHealth}");
+            healthText.color = lowHealthColor;
         }
+        else
+        {
+            healthText.color = fullHealthColor;
+        }
+
+        Debug.Log($"Vida actualizada: {currentHealth}, Color: {healthText.color}");
     }
 
     private void OnDestroy()
