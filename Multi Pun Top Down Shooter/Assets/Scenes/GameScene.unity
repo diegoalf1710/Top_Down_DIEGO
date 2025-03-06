@@ -1370,7 +1370,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 0}
   smoothSpeed: 5
-  offset: {x: 0, y: 10, z: -3}
+  offset: {x: 0, y: -5, z: -3}
   isFollowing: 1
 --- !u!1 &1084389033
 GameObject:
@@ -1403,16 +1403,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   length: 100
-  maxHeight: 5
+  maxHeight: 2
   roomSize: 1
-  floorPrefab: {fileID: 2350548721274387306, guid: e51be3a19319a9e47b9e7c2110e020bb,
+  floorPrefab: {fileID: 5119157557993230468, guid: c24ab77ce68f78b47b3083bedb140da6,
     type: 3}
-  wallPrefab: {fileID: 3645617798471442299, guid: 835d423293d65ac47a785c5d8eddf273,
+  wallPrefab: {fileID: 3563626983398840332, guid: 2e689f850d4fd3341a9e76826de41c98,
     type: 3}
   ceilingPrefab: {fileID: 7645889050917359423, guid: adb4127aaf143cd46a52ffbdfa769bc4,
     type: 3}
   obstaclePrefabs:
-  - {fileID: 3278708449228885677, guid: 4b3ee27f3f1e014428a1709fbb0eaa57, type: 3}
+  - {fileID: 255188863208322300, guid: 7dd808ccefaa8c547b4bc02b2495cdca, type: 3}
   obstaclePercentage: 1
   generateCeiling: 0
 --- !u!4 &1084389035
