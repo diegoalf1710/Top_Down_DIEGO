@@ -3,14 +3,27 @@ using Photon.Pun;
 
 public class PlayerHealth : MonoBehaviourPun
 {
-    public int currentHealth = 100; // Vida inicial del jugador
+    public int maxHealth = 100;
+    public int currentHealth;
 
     // Evento para notificar cambios en la vida
     public System.Action<int> onHealthChanged;
 
-    void Start()
+    private void Start()
     {
-        onHealthChanged?.Invoke(currentHealth); // Notificar el estado inicial de la salud
+        currentHealth = maxHealth;
+        onHealthChanged?.Invoke((int)currentHealth); // Notificar el estado inicial de la salud
+    }
+
+    public bool Heal(int amount)
+    {
+        if (currentHealth < maxHealth)
+        {
+            currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+            Debug.Log($"Player healed for {amount}. Current health: {currentHealth}");
+            return true;
+        }
+        return false;
     }
 
     [PunRPC]
@@ -18,15 +31,12 @@ public class PlayerHealth : MonoBehaviourPun
     {
         if (photonView.IsMine)
         {
-            currentHealth -= damage;
-            currentHealth = Mathf.Max(0, currentHealth); // Evitar valores negativos
-            
-            // Notificar el cambio de vida
-            onHealthChanged?.Invoke(currentHealth);
+            currentHealth = Mathf.Max(currentHealth - damage, 0);
+            onHealthChanged?.Invoke((int)currentHealth); // Notificar el cambio de vida
 
             if (currentHealth <= 0)
             {
-                GameOver();
+                Die();
             }
         }
     }
@@ -41,10 +51,10 @@ public class PlayerHealth : MonoBehaviourPun
         }
     }
 
-    void GameOver()
+    private void Die()
     {
+        Debug.Log("Player died!");
         // Lógica de fin de juego
-        Debug.Log("Game Over");
         if (photonView.IsMine)
         {
             PhotonNetwork.Destroy(gameObject); // Destruir el objeto del jugador en la red

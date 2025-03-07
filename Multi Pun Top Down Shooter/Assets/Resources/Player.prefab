@@ -20,6 +20,7 @@ GameObject:
   - component: {fileID: 4880196179893680232}
   - component: {fileID: -8922035663689415260}
   - component: {fileID: 5567611202823696732}
+  - component: {fileID: 4336475665877578450}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -259,7 +260,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d03dcb0e27ea7e042b260627a3923f28, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHealth: 100
   currentHealth: 100
+--- !u!114 &4336475665877578450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1272872487539807941}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b17e902542f430488ee4fded2c44d6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthTextObject: {fileID: 255646270662262003, guid: 506ac9350361382428af116e767b25d6,
+    type: 3}
+  coinsTextObject: {fileID: 5558456693277102387, guid: c5c660c0de5e42e4890b0e192e6035ea,
+    type: 3}
+  healthText: {fileID: 8160369075230199344, guid: 506ac9350361382428af116e767b25d6,
+    type: 3}
+  coinsText: {fileID: 7583816129980937494, guid: c5c660c0de5e42e4890b0e192e6035ea,
+    type: 3}
+  coins: 0
 --- !u!1 &8211182797527041497
 GameObject:
   m_ObjectHideFlags: 0
