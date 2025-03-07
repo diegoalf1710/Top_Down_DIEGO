@@ -32,8 +32,15 @@ public class EnemyShooter : MonoBehaviourPun
     public LayerMask groundLayer;
     public float obstacleCheckDistance = 1f;
 
+    [Header("Health Settings")]
+    public float maxHealth = 100f;
+    private float currentHealth;
+
     private void Start()
     {
+        // Inicializar la salud
+        currentHealth = maxHealth;
+
         // Asegurarnos de que tenga una rotación inicial correcta
         transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
         
@@ -59,22 +66,31 @@ public class EnemyShooter : MonoBehaviourPun
 
     void Update()
     {
-        // Remover la verificación de IsMine para permitir el movimiento local
         FindNearestPlayer();
 
         if (targetPlayer != null)
         {
             RotateTowardsPlayer();
 
-            if (Time.time >= nextFireTime)
+            // Verificar si el jugador está dentro del rango y si podemos disparar
+            float distanceToPlayer = Vector3.Distance(transform.position, targetPlayer.transform.position);
+            if (distanceToPlayer <= detectionRange && Time.time >= nextFireTime)
             {
-                Shoot();
-                nextFireTime = Time.time + fireRate;
+                // Verificar si estamos mirando hacia el jugador
+                Vector3 directionToPlayer = (targetPlayer.transform.position - transform.position).normalized;
+                float dot = Vector3.Dot(transform.forward, directionToPlayer);
+                
+                // Si estamos mirando aproximadamente hacia el jugador (dot > 0.8 significa ángulo < ~37 grados)
+                if (dot > 0.8f)
+                {
+                    Shoot();
+                    nextFireTime = Time.time + fireRate;
+                }
             }
         }
         else
         {
-            //Patrol();
+            Patrol();
         }
     }
 
@@ -129,26 +145,35 @@ public class EnemyShooter : MonoBehaviourPun
     // Método para disparar
     void Shoot()
     {
-        if (targetPlayer != null && projectilePrefab != null && firePoint != null)
-        {
-            Vector3 direction = (targetPlayer.transform.position - firePoint.position).normalized;
-            
-            // Asegurarse de que el proyectil se instancie en la red solo si somos el dueño
-            if (photonView.IsMine)
-            {
-                GameObject projectile = PhotonNetwork.Instantiate(
-                    projectilePrefab.name, 
-                    firePoint.position, 
-                    Quaternion.LookRotation(direction)
-                );
+        if (targetPlayer == null || projectilePrefab == null || firePoint == null) return;
 
-                // Asegurarse de que el proyectil tenga el componente necesario
-                Projectile projectileComponent = projectile.GetComponent<Projectile>();
-                if (projectileComponent != null)
-                {
-                    projectileComponent.SetDirection(direction);
-                }
+        // Calcular dirección hacia el jugador
+        Vector3 direction = (targetPlayer.transform.position - firePoint.position).normalized;
+        
+        // Crear el proyectil usando PhotonNetwork.Instantiate
+        try
+        {
+            GameObject projectile = PhotonNetwork.Instantiate(
+                projectilePrefab.name, 
+                firePoint.position, 
+                Quaternion.LookRotation(direction)
+            );
+
+            // Asegurarse de que el proyectil tenga el componente necesario y configurarlo
+            Projectile projectileComponent = projectile.GetComponent<Projectile>();
+            if (projectileComponent != null)
+            {
+                projectileComponent.SetDirection(direction);
+                Debug.Log("Proyectil disparado hacia: " + direction);
             }
+            else
+            {
+                Debug.LogWarning("El proyectil no tiene el componente Projectile");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("Error al instanciar el proyectil: " + e.Message);
         }
     }
 
@@ -172,14 +197,14 @@ public class EnemyShooter : MonoBehaviourPun
                 {
                     movingRight = !movingRight;
                     // Girar el enemigo 180 grados
-                    transform.Rotate(0, 180, 0);
+                    transform.Rotate(0, 180*Time.deltaTime, 0);
                 }
             }
             else
             {
                 movingRight = !movingRight;
                 // Girar el enemigo 180 grados
-                transform.Rotate(0, 180, 0);
+                transform.Rotate(0, 180*Time.deltaTime, 0);
             }
         }
     }
@@ -196,6 +221,71 @@ public class EnemyShooter : MonoBehaviourPun
             return false;
 
         return true;
+    }
+
+    [PunRPC]
+    public void TakeDamage(float damage)
+    {
+        // Removemos la verificación IsMine para que todos los clientes actualicen la salud
+        currentHealth -= damage;
+        Debug.Log($"Enemy took {damage} damage. Current health: {currentHealth}");
+
+        if (currentHealth <= 0 && photonView.IsMine)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Enemy destroyed!");
+        if (photonView.IsMine)
+        {
+            PhotonNetwork.Destroy(gameObject);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!photonView.IsMine) return;
+
+        if (other.CompareTag("Bullet"))
+        {
+            // Llamar al RPC de daño
+            photonView.RPC("TakeDamage", RpcTarget.All, 10f);
+            
+            // Destruir la bala
+            if (other.gameObject.GetComponent<PhotonView>())
+            {
+                PhotonNetwork.Destroy(other.gameObject);
+            }
+            else
+            {
+                Destroy(other.gameObject);
+            }
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (!photonView.IsMine) return;
+
+        if (collision.gameObject.CompareTag("Bullet"))
+        {
+            Debug.Log("Bullet hit enemy!");
+            // Llamar al RPC de daño
+            photonView.RPC("TakeDamage", RpcTarget.All, 10f);
+            
+            // Destruir la bala
+            if (collision.gameObject.GetComponent<PhotonView>())
+            {
+                PhotonNetwork.Destroy(collision.gameObject);
+            }
+            else
+            {
+                Destroy(collision.gameObject);
+            }
+        }
     }
 
     void OnDrawGizmos()

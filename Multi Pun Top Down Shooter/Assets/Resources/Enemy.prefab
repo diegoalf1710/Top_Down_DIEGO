@@ -236,13 +236,14 @@ MonoBehaviour:
   detectionRange: 4.5
   rotationSpeed: 5
   patrolType: 0
-  patrolSpeed: 2
-  patrolDistance: 5
+  patrolSpeed: 3
+  patrolDistance: 7
   groundCheckDistance: 3.3
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   obstacleCheckDistance: 1
+  maxHealth: 100
 --- !u!114 &7251125627292115508
 MonoBehaviour:
   m_ObjectHideFlags: 0

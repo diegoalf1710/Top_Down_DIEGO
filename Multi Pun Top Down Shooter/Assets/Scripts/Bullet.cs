@@ -4,10 +4,10 @@ using Photon.Pun;
 public class Bullet : MonoBehaviourPun
 {
     // Velocidad de la bala
-    private float speed;
+    public float speed;
 
     // Dueño de la bala (jugador que la disparó)
-    private Photon.Realtime.Player owner;
+    public Photon.Realtime.Player owner;
 
     // Método para inicializar la bala
     public void Initialize(float bulletSpeed, Photon.Realtime.Player bulletOwner)
@@ -44,6 +44,19 @@ public class Bullet : MonoBehaviourPun
             // Verifica si la bala chocó con algo que no sea el jugador
             if (!other.CompareTag("Player"))
             {
+                DestroyBullet(); // Destruye la bala
+            }
+
+            // Verificar si golpeó a un enemigo
+            if (other.CompareTag("Enemy"))
+            {
+                // Obtener el componente EnemyShooter y verificar que existe
+                EnemyShooter enemyShooter = other.gameObject.GetComponent<EnemyShooter>();
+                if (enemyShooter != null)
+                {
+                    enemyShooter.photonView.RPC("TakeDamage", RpcTarget.All, 10f);
+                    Debug.Log("Hit enemy and applying damage");
+                }
                 DestroyBullet(); // Destruye la bala
             }
         }

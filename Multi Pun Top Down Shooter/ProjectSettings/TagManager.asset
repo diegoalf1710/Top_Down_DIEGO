@@ -8,6 +8,7 @@ TagManager:
   - Enemy
   - Floor
   - Coin
+  - EnemyBullet
   layers:
   - Default
   - TransparentFX
