@@ -2,6 +2,9 @@ using UnityEngine;
 using TMPro;
 using Photon.Pun;
 
+// Esta clase maneja la visualización del nombre del jugador y su barra de vida en la interfaz
+// Se encarga de crear, actualizar y destruir las etiquetas de texto que muestran esta información
+// Utiliza Photon para distinguir entre el jugador local y los demás jugadores
 public class PlayerNameDisplay : MonoBehaviourPun
 {
     public GameObject nameLabelPrefab; // Prefab del nombre de usuario (TextMeshPro)
@@ -12,6 +15,9 @@ public class PlayerNameDisplay : MonoBehaviourPun
     private TextMeshProUGUI healthText;
     private PlayerHealth playerHealth;
 
+    // Inicializa los componentes y configura las etiquetas de nombre y vida
+    // Si es el jugador local, establece el texto en verde y muestra "Jugador Local"
+    // Para otros jugadores, muestra "Otro Jugador" y configura la actualización de vida
     void Start()
     {
         if (photonView.IsMine)
@@ -122,6 +128,8 @@ public class PlayerNameDisplay : MonoBehaviourPun
         }
     }
 
+    // Actualiza la posición de las etiquetas de nombre y vida en cada frame
+    // Las etiquetas siguen al jugador en la pantalla, manteniéndose sobre su cabeza
     void Update()
     {
         if (nameLabel != null && healthLabel != null)
@@ -134,6 +142,9 @@ public class PlayerNameDisplay : MonoBehaviourPun
         }
     }
 
+    // Actualiza el texto y el color de la barra de vida
+    // El color cambia gradualmente de verde a rojo según disminuye la vida
+    // Si la vida baja del 30%, el color será completamente rojo
     private void UpdateHealthDisplay(int currentHealth)
     {
         if (healthText != null)
@@ -158,6 +169,8 @@ public class PlayerNameDisplay : MonoBehaviourPun
         }
     }
 
+    // Limpia los recursos al destruir el objeto
+    // Elimina las etiquetas de nombre y vida, y se desuscribe del evento de vida
     void OnDestroy()
     {
         // Destruir el nombre de usuario cuando el jugador se destruye

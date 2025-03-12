@@ -1,39 +1,92 @@
 using UnityEngine;
 using Photon.Pun;
 
+/// <summary>
+/// Define los tipos de patrulla que puede realizar el enemigo
+/// </summary>
 public enum PatrolType
 {
-    LeftRight,
-    Square,
-    Static
+    LeftRight,   // Patrulla de izquierda a derecha
+    Square,      // Patrulla en cuadrado
+    Static       // Sin movimiento
 }
 
+/// <summary>
+/// Controla el comportamiento de los enemigos que disparan en el juego.
+/// Incluye detección de jugadores, sistema de patrulla y disparo automático.
+/// </summary>
 public class EnemyShooter : MonoBehaviourPun
 {
-    public GameObject projectilePrefab; // Prefab del proyectil
-    public Transform firePoint; // Punto de origen del disparo
-    public float fireRate = 1f; // Tiempo entre disparos (en segundos)
-    public float detectionRange = 10f; // Rango de detección del jugador
-    public float rotationSpeed = 2f; // Reducido de 5f a 2f para una rotación más suave
+    [Header("Configuración de Disparo")]
+    /// <summary>
+    /// Prefab del proyectil que dispara el enemigo
+    /// </summary>
+    public GameObject projectilePrefab;
 
-    private float nextFireTime = 0f; // Tiempo para el próximo disparo
-    private GameObject targetPlayer; // Jugador objetivo
+    /// <summary>
+    /// Punto desde donde se originan los disparos
+    /// </summary>
+    public Transform firePoint;
 
-    [Header("Patrol Settings")]
+    /// <summary>
+    /// Tiempo entre disparos en segundos
+    /// </summary>
+    public float fireRate = 1f;
+
+    /// <summary>
+    /// Distancia máxima a la que el enemigo puede detectar jugadores
+    /// </summary>
+    public float detectionRange = 10f;
+
+    /// <summary>
+    /// Velocidad de rotación del enemigo
+    /// </summary>
+    public float rotationSpeed = 2f;
+
+    [Header("Configuración de Patrulla")]
+    /// <summary>
+    /// Tipo de patrulla que realizará el enemigo
+    /// </summary>
     public PatrolType patrolType = PatrolType.LeftRight;
+
+    /// <summary>
+    /// Velocidad de movimiento durante la patrulla
+    /// </summary>
     public float patrolSpeed = 2f;
+
+    /// <summary>
+    /// Distancia máxima que recorre el enemigo durante la patrulla
+    /// </summary>
     public float patrolDistance = 5f;
+
+    [Header("Verificación de Suelo")]
+    /// <summary>
+    /// Distancia para verificar si hay suelo debajo
+    /// </summary>
+    public float groundCheckDistance = 1f;
+
+    /// <summary>
+    /// Capa que define el suelo para las comprobaciones
+    /// </summary>
+    public LayerMask groundLayer;
+
+    /// <summary>
+    /// Distancia para verificar obstáculos al frente
+    /// </summary>
+    public float obstacleCheckDistance = 1f;
+
+    [Header("Configuración de Salud")]
+    /// <summary>
+    /// Salud máxima del enemigo
+    /// </summary>
+    public float maxHealth = 100f;
+
+    // Variables privadas
+    private float nextFireTime = 0f;
+    private GameObject targetPlayer;
     private Vector3 startPosition;
     private Vector3 currentTarget;
     private bool movingRight = true;
-    
-    [Header("Ground Check")]
-    public float groundCheckDistance = 1f;
-    public LayerMask groundLayer;
-    public float obstacleCheckDistance = 1f;
-
-    [Header("Health Settings")]
-    public float maxHealth = 100f;
     private float currentHealth;
 
     private void Start()

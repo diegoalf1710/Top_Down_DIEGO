@@ -5,35 +5,35 @@ using UnityEngine;
 public class LevelCreator : MonoBehaviour
 {
     [Header("Level Settings")]
-    public int width = 50;
-    public int length = 50;
-    public int maxHeight = 3;
-    public float roomSize = 1f;
+    public int width = 50; // Ancho del nivel
+    public int length = 50; // Largo del nivel
+    public int maxHeight = 3; // Altura máxima de los obstáculos
+    public float roomSize = 1f; // Tamaño de cada celda del nivel
 
     [Header("Prefabs")]
-    public GameObject floorPrefab;
-    public GameObject wallPrefab;
-    public GameObject ceilingPrefab;
-    public GameObject[] obstaclePrefabs;
+    public GameObject floorPrefab; // Prefab del suelo
+    public GameObject wallPrefab; // Prefab de las paredes
+    public GameObject ceilingPrefab; // Prefab del techo
+    public GameObject[] obstaclePrefabs; // Prefabs de los obstáculos
 
     [Header("Generation Settings")]
     [Range(0, 100)]
-    public int obstaclePercentage = 20;
-    public bool generateCeiling = true;
+    public int obstaclePercentage = 20; // Porcentaje de generación de obstáculos
+    public bool generateCeiling = true; // Indica si se debe generar el techo
 
     [Header("Items Settings")]
     [Range(0, 100)]
-    public int itemSpawnPercentage = 10;
-    public GameObject[] itemPrefabs;
-    public float minItemSpacing = 3f; // Espacio mínimo entre items
+    public int itemSpawnPercentage = 10; // Porcentaje de generación de ítems
+    public GameObject[] itemPrefabs; // Prefabs de los ítems
+    public float minItemSpacing = 3f; // Espacio mínimo entre ítems
 
     [Header("Enemy Settings")]
     [Range(0, 100)]
-    public int enemySpawnPercentage = 15;
-    public GameObject[] enemyPrefabs;
-    public float minEnemySpacing = 5f;
+    public int enemySpawnPercentage = 15; // Porcentaje de generación de enemigos
+    public GameObject[] enemyPrefabs; // Prefabs de los enemigos
+    public float minEnemySpacing = 5f; // Espacio mínimo entre enemigos
 
-    private List<Vector2> occupiedPositions = new List<Vector2>();
+    private List<Vector2> occupiedPositions = new List<Vector2>(); // Lista de posiciones ocupadas
 
     // Sistema de grid para rastrear objetos
     private Dictionary<Vector2Int, List<GameObject>> gridObjects = new Dictionary<Vector2Int, List<GameObject>>();
@@ -41,17 +41,17 @@ public class LevelCreator : MonoBehaviour
 
     public enum BlockType
     {
-        Empty,
-        Floor,
-        Obstacle,
-        Wall,
-        Item,
-        Enemy
+        Empty, // Bloque vacío
+        Floor, // Bloque de suelo
+        Obstacle, // Bloque de obstáculo
+        Wall, // Bloque de pared
+        Item, // Bloque de ítem
+        Enemy // Bloque de enemigo
     }
 
     private void Start()
     {
-        GenerateLevel();
+        GenerateLevel(); // Generar el nivel al iniciar
     }
 
     void GenerateLevel()

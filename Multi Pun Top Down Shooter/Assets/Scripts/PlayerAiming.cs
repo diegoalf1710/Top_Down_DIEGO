@@ -1,8 +1,14 @@
 using UnityEngine;
 using Photon.Pun;
 
+// Esta clase maneja la rotación del jugador para que mire hacia donde apunta el cursor del mouse.
+// Funciona en conjunto con el sistema multijugador de Photon (PUN2) para asegurar que
+// solo el jugador local pueda controlar su propia rotación.
 public class PlayerAiming : MonoBehaviourPun
 {
+    // Update se ejecuta una vez por frame.
+    // Realiza el cálculo de la rotación del jugador basándose en la posición del cursor del mouse.
+    // Solo funciona si el jugador es el dueño local del objeto (photonView.IsMine).
     void Update()
     {
         // Verifica si el jugador local es el dueño del PhotonView
