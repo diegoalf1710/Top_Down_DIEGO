@@ -120,6 +120,7 @@ GameObject:
   - component: {fileID: 1175520817863310989}
   - component: {fileID: 7251125627292115508}
   - component: {fileID: 1618926032779830579}
+  - component: {fileID: 2872938679872134068}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Enemy
@@ -235,14 +236,6 @@ MonoBehaviour:
   fireRate: 1
   detectionRange: 4.5
   rotationSpeed: 5
-  patrolType: 0
-  patrolSpeed: 3
-  patrolDistance: 7
-  groundCheckDistance: 3.3
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  obstacleCheckDistance: 1
   maxHealth: 100
 --- !u!114 &7251125627292115508
 MonoBehaviour:
@@ -283,6 +276,28 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!195 &2872938679872134068
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4493360176701251764}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &5789154528279103139
 GameObject:
   m_ObjectHideFlags: 0

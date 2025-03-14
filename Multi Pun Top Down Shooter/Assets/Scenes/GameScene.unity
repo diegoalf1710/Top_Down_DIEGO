@@ -1295,10 +1295,12 @@ MonoBehaviour:
   itemPrefabs:
   - {fileID: 2586417829626208188, guid: 7b64e5838ad2e3144b2f5569bb02d04d, type: 3}
   minItemSpacing: 3
-  enemySpawnPercentage: 2
+  enemySpawnPercentage: 1
   enemyPrefabs:
   - {fileID: 4493360176701251764, guid: dafa7cf053b83074c88085068d03602e, type: 3}
   minEnemySpacing: 5
+  navMeshSurface: {fileID: 0}
+  navMeshBakeDelay: 0.5
 --- !u!4 &1084389035
 Transform:
   m_ObjectHideFlags: 0

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
+using Unity.AI.Navigation; // Añadir este using para NavMeshSurface
 
 public class LevelCreator : MonoBehaviour
 {
@@ -32,6 +34,10 @@ public class LevelCreator : MonoBehaviour
     public int enemySpawnPercentage = 15; // Porcentaje de generación de enemigos
     public GameObject[] enemyPrefabs; // Prefabs de los enemigos
     public float minEnemySpacing = 5f; // Espacio mínimo entre enemigos
+
+    [Header("NavMesh Settings")]
+    public NavMeshSurface navMeshSurface;
+    public float navMeshBakeDelay = 0.5f;
 
     private List<Vector2> occupiedPositions = new List<Vector2>(); // Lista de posiciones ocupadas
 
@@ -99,6 +105,44 @@ public class LevelCreator : MonoBehaviour
         if (generateCeiling)
         {
             GenerateCeiling(levelContainer);
+        }
+
+        // Añadir NavMeshSurface si no existe
+        if (navMeshSurface == null)
+        {
+            navMeshSurface = levelContainer.AddComponent<NavMeshSurface>();
+            navMeshSurface.collectObjects = CollectObjects.All;
+            navMeshSurface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
+        }
+
+        // Iniciar la generación del NavMesh después de un pequeño delay
+        StartCoroutine(BuildNavMeshDelayed());
+    }
+
+    IEnumerator BuildNavMeshDelayed()
+    {
+        // Esperar a que todos los objetos estén en su lugar
+        yield return new WaitForSeconds(navMeshBakeDelay);
+        
+        // Construir el NavMesh
+        navMeshSurface.BuildNavMesh();
+        
+        // Añadir NavMeshAgent a los enemigos
+        SetupEnemyNavigation();
+    }
+
+    void SetupEnemyNavigation()
+    {
+        foreach (var gridPos in gridObjects)
+        {
+            foreach (var obj in gridPos.Value)
+            {
+                if (GetBlockTypeAt(gridPos.Key) == BlockType.Enemy)
+                {
+                    // Añadir AIController como componente
+                    AIController aiController = obj.AddComponent<AIController>();
+                }
+            }
         }
     }
 

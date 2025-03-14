@@ -2,115 +2,36 @@ using UnityEngine;
 using Photon.Pun;
 
 /// <summary>
-/// Define los tipos de patrulla que puede realizar el enemigo
-/// </summary>
-public enum PatrolType
-{
-    LeftRight,   // Patrulla de izquierda a derecha
-    Square,      // Patrulla en cuadrado
-    Static       // Sin movimiento
-}
-
-/// <summary>
 /// Controla el comportamiento de los enemigos que disparan en el juego.
-/// Incluye detección de jugadores, sistema de patrulla y disparo automático.
+/// Se enfoca en la detección y disparo hacia jugadores cercanos.
 /// </summary>
 public class EnemyShooter : MonoBehaviourPun
 {
     [Header("Configuración de Disparo")]
-    /// <summary>
-    /// Prefab del proyectil que dispara el enemigo
-    /// </summary>
     public GameObject projectilePrefab;
-
-    /// <summary>
-    /// Punto desde donde se originan los disparos
-    /// </summary>
     public Transform firePoint;
-
-    /// <summary>
-    /// Tiempo entre disparos en segundos
-    /// </summary>
     public float fireRate = 1f;
-
-    /// <summary>
-    /// Distancia máxima a la que el enemigo puede detectar jugadores
-    /// </summary>
     public float detectionRange = 10f;
-
-    /// <summary>
-    /// Velocidad de rotación del enemigo
-    /// </summary>
     public float rotationSpeed = 2f;
 
-    [Header("Configuración de Patrulla")]
-    /// <summary>
-    /// Tipo de patrulla que realizará el enemigo
-    /// </summary>
-    public PatrolType patrolType = PatrolType.LeftRight;
-
-    /// <summary>
-    /// Velocidad de movimiento durante la patrulla
-    /// </summary>
-    public float patrolSpeed = 2f;
-
-    /// <summary>
-    /// Distancia máxima que recorre el enemigo durante la patrulla
-    /// </summary>
-    public float patrolDistance = 5f;
-
-    [Header("Verificación de Suelo")]
-    /// <summary>
-    /// Distancia para verificar si hay suelo debajo
-    /// </summary>
-    public float groundCheckDistance = 1f;
-
-    /// <summary>
-    /// Capa que define el suelo para las comprobaciones
-    /// </summary>
-    public LayerMask groundLayer;
-
-    /// <summary>
-    /// Distancia para verificar obstáculos al frente
-    /// </summary>
-    public float obstacleCheckDistance = 1f;
-
     [Header("Configuración de Salud")]
-    /// <summary>
-    /// Salud máxima del enemigo
-    /// </summary>
     public float maxHealth = 100f;
 
-    // Variables privadas
     private float nextFireTime = 0f;
     private GameObject targetPlayer;
-    private Vector3 startPosition;
-    private Vector3 currentTarget;
-    private bool movingRight = true;
     private float currentHealth;
 
     private void Start()
     {
-        // Inicializar la salud
         currentHealth = maxHealth;
-
-        // Asegurarnos de que tenga una rotación inicial correcta
         transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
-        
-        // Guardar la posición inicial para el patrullaje
-        startPosition = transform.position;
-        
-        // Calcular el punto objetivo inicial para el patrullaje
-        currentTarget = startPosition + transform.right * patrolDistance;
 
-        // Asegurar que el PhotonView está configurado correctamente
         if (photonView == null)
         {
             Debug.LogError("PhotonView no encontrado en EnemyShooter");
             return;
         }
 
-        // Solicitar la propiedad del objeto si no la tenemos
         if (!photonView.IsMine)
         {
             photonView.RequestOwnership();
@@ -125,25 +46,18 @@ public class EnemyShooter : MonoBehaviourPun
         {
             RotateTowardsPlayer();
 
-            // Verificar si el jugador está dentro del rango y si podemos disparar
             float distanceToPlayer = Vector3.Distance(transform.position, targetPlayer.transform.position);
             if (distanceToPlayer <= detectionRange && Time.time >= nextFireTime)
             {
-                // Verificar si estamos mirando hacia el jugador
                 Vector3 directionToPlayer = (targetPlayer.transform.position - transform.position).normalized;
                 float dot = Vector3.Dot(transform.forward, directionToPlayer);
                 
-                // Si estamos mirando aproximadamente hacia el jugador (dot > 0.8 significa ángulo < ~37 grados)
                 if (dot > 0.8f)
                 {
                     Shoot();
                     nextFireTime = Time.time + fireRate;
                 }
             }
-        }
-        else
-        {
-            Patrol();
         }
     }
 
@@ -230,52 +144,6 @@ public class EnemyShooter : MonoBehaviourPun
         }
     }
 
-    void Patrol()
-    {
-        if (patrolType == PatrolType.Static)
-            return;
-
-        if (patrolType == PatrolType.LeftRight)
-        {
-            // Calcular la dirección de movimiento
-            Vector3 movement = transform.right * (movingRight ? 1 : -1) * patrolSpeed * Time.deltaTime;
-            
-            if (CanMoveToPosition(transform.position + movement))
-            {
-                transform.position += movement;
-
-                // Verificar si necesitamos cambiar de dirección
-                float distanceFromStart = Vector3.Distance(transform.position, startPosition);
-                if (distanceFromStart >= patrolDistance)
-                {
-                    movingRight = !movingRight;
-                    // Girar el enemigo 180 grados
-                    transform.Rotate(0, 180*Time.deltaTime, 0);
-                }
-            }
-            else
-            {
-                movingRight = !movingRight;
-                // Girar el enemigo 180 grados
-                transform.Rotate(0, 180*Time.deltaTime, 0);
-            }
-        }
-    }
-
-    bool CanMoveToPosition(Vector3 targetPosition)
-    {
-        // Verificar si hay suelo
-        RaycastHit hit;
-        if (!Physics.Raycast(targetPosition + Vector3.up, Vector3.down, out hit, groundCheckDistance, groundLayer))
-            return false;
-
-        // Verificar obstáculos
-        if (Physics.Raycast(transform.position, targetPosition - transform.position, obstacleCheckDistance))
-            return false;
-
-        return true;
-    }
-
     [PunRPC]
     public void TakeDamage(float damage)
     {
@@ -346,17 +214,5 @@ public class EnemyShooter : MonoBehaviourPun
         // Dibujar área de detección
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
-
-        // Dibujar rango de patrulla
-        if (patrolType == PatrolType.LeftRight)
-        {
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(startPosition - Vector3.right * patrolDistance, 
-                           startPosition + Vector3.right * patrolDistance);
-        }
-
-        // Dibujar raycast de detección de suelo
-        Gizmos.color = Color.green;
-        Gizmos.DrawRay(transform.position + Vector3.up, Vector3.down * groundCheckDistance);
     }
 }
