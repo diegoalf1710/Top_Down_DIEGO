@@ -36,7 +36,7 @@ public class Bullet : MonoBehaviourPun
     {
         if (photonView.IsMine)
         {
-            Invoke("DestroyBullet", 1f);
+            Invoke("DestroyBullet", 1.5f);
         }
     }
 
@@ -63,18 +63,53 @@ public class Bullet : MonoBehaviourPun
         {
             if (!other.CompareTag("Player"))
             {
-                DestroyBullet();
-            }
-
-            if (other.CompareTag("Enemy"))
-            {
-                EnemyShooter enemyShooter = other.gameObject.GetComponent<EnemyShooter>();
-                if (enemyShooter != null)
+                if (other.CompareTag("Enemy"))
                 {
-                    enemyShooter.photonView.RPC("TakeDamage", RpcTarget.All, 10f);
-                    Debug.Log("Hit enemy and applying damage");
+                    EnemyShooter enemyShooter = other.gameObject.GetComponent<EnemyShooter>();
+                    if (enemyShooter != null)
+                    {
+                        PhotonView enemyPhotonView = enemyShooter.photonView;
+                        if (enemyPhotonView != null)
+                        {
+                            // Debug información del PhotonView
+                            Debug.Log($"Enemy PhotonView - ViewID: {enemyPhotonView.ViewID}, IsMine: {enemyPhotonView.IsMine}");
+                            
+                            if (enemyPhotonView.ViewID != 0)  // Solo verificamos el ViewID
+                            {
+                                enemyPhotonView.RPC("TakeDamage", RpcTarget.All, 10f);
+                                Debug.Log($"Hit enemy. PhotonView ID: {enemyPhotonView.ViewID}");
+                            }
+                            else
+                            {
+                                Debug.LogWarning($"PhotonView ViewID is 0 on enemy: {enemyShooter.gameObject.name}");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError($"No PhotonView component found on enemy: {enemyShooter.gameObject.name}");
+                        }
+                        DestroyBullet();
+                    }
+                    else
+                    {
+                        Debug.LogError($"No EnemyShooter component found on enemy object: {other.gameObject.name}");
+                        DestroyBullet();
+                    }
                 }
-                DestroyBullet();
+                if (other.CompareTag("Wall"))
+                {
+                    Debug.Log("Hit wall");
+                    DestroyBullet();
+                }
+                if (other.CompareTag("Obstacle"))
+                {
+                    Debug.Log("Hit obstacle");
+                    DestroyBullet();
+                }
+                else
+                {
+                    DestroyBullet();
+                }
             }
         }
     }

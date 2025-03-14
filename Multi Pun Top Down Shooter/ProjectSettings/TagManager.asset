@@ -9,6 +9,8 @@ TagManager:
   - Floor
   - Coin
   - EnemyBullet
+  - Wall
+  - Obstacle
   layers:
   - Default
   - TransparentFX

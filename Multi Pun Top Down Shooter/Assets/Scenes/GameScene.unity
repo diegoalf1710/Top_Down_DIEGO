@@ -1279,7 +1279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   width: 100
   length: 100
-  maxHeight: 2
+  maxHeight: 4
   roomSize: 1
   floorPrefab: {fileID: 5119157557993230468, guid: c24ab77ce68f78b47b3083bedb140da6,
     type: 3}
