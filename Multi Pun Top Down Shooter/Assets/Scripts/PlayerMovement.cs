@@ -12,12 +12,16 @@ public class PlayerMovement : MonoBehaviourPun
     public float maxVerticalSpeed = 10f; // Límite de velocidad vertical
     public float fallMultiplier = 2.5f;  // Multiplicador de caída
 
+    [Header("Jump Settings")]
+    public float jumpForce = 7f;
+    public bool canJump = true;
+
     [Header("Movement Smoothing")]
     public float movementSmoothing = 0.05f;
 
     private Rigidbody rb;
     private Vector3 currentVelocity;
-    private bool isGrounded;
+    public bool isGrounded;
 
     // Inicializa los componentes necesarios y configura el Rigidbody
     void Start()
@@ -53,6 +57,12 @@ public class PlayerMovement : MonoBehaviourPun
 
         Vector3 targetVelocity = new Vector3(moveX, 0, moveZ).normalized * speed;
         targetVelocity.y = rb.velocity.y;
+
+        // Manejo del salto
+        if (isGrounded && canJump && Input.GetButton("Jump"))
+        {
+            targetVelocity.y = jumpForce;
+        }
 
         if (!isGrounded)
         {

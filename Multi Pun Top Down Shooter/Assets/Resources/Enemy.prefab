@@ -211,7 +211,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -237,7 +237,6 @@ MonoBehaviour:
   fireRate: 1
   detectionRange: 4.5
   rotationSpeed: 10
-  maxHealth: 100
 --- !u!195 &2872938679872134068
 NavMeshAgent:
   m_ObjectHideFlags: 0

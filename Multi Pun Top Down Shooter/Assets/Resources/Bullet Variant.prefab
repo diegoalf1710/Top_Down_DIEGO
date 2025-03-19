@@ -73,6 +73,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bullet Variant
       objectReference: {fileID: 0}
+    - target: {fileID: 7680066456879020692, guid: 59662a8b8aa922645843f8921c397a6a,
+        type: 3}
+      propertyPath: m_TagString
+      value: Bullet_2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

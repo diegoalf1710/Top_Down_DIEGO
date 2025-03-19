@@ -193,13 +193,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 7
-  groundCheckDistance: 0.5
+  groundCheckDistance: 1.5
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   maxVerticalSpeed: 15
   fallMultiplier: 2.5
+  jumpForce: 7
+  canJump: 1
   movementSmoothing: 0.05
+  isGrounded: 0
 --- !u!114 &-6951327414234808761
 MonoBehaviour:
   m_ObjectHideFlags: 0

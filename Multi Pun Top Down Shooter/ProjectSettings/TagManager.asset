@@ -11,6 +11,9 @@ TagManager:
   - EnemyBullet
   - Wall
   - Obstacle
+  - Stone
+  - Dirt
+  - Bullet_2
   layers:
   - Default
   - TransparentFX
