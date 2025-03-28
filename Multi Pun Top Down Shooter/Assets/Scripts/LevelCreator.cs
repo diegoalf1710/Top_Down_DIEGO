@@ -1,9 +1,11 @@
+using UnityEditor;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using Unity.AI.Navigation; // Añadir este using para NavMeshSurface
+using Unity.AI.Navigation;
 
+[ExecuteInEditMode]
 public class LevelCreator : MonoBehaviour
 {
     [Header("Level Settings")]
@@ -71,18 +73,36 @@ public class LevelCreator : MonoBehaviour
         Dirt
     }
 
+    private GameObject currentLevelContainer;
+
     private void Start()
     {
-        GenerateLevel(); // Generar el nivel al iniciar
+        // Remove automatic generation on Start
+    }
+
+    public void DestroyCurrentLevel()
+    {
+        if (currentLevelContainer != null)
+        {
+            if (Application.isPlaying)
+            {
+                Destroy(currentLevelContainer);
+            }
+            else
+            {
+                DestroyImmediate(currentLevelContainer);
+            }
+            occupiedPositions.Clear();
+            gridObjects.Clear();
+            gridBlockTypes.Clear();
+        }
     }
 
     void GenerateLevel()
     {
-        occupiedPositions.Clear();
-        gridObjects.Clear();
-        gridBlockTypes.Clear();
-        GameObject levelContainer = new GameObject("GeneratedLevel");
-        levelContainer.transform.parent = transform;
+        DestroyCurrentLevel();
+        currentLevelContainer = new GameObject("GeneratedLevel");
+        currentLevelContainer.transform.parent = transform;
 
         // Generar terreno con ruido Perlin
         float[,] heightMap = GenerateHeightMap();
@@ -92,42 +112,42 @@ public class LevelCreator : MonoBehaviour
         {
             for (int z = 0; z < length; z++)
             {
-                int terrainHeight = Mathf.RoundToInt(heightMap[x,z] * terrainHeightScale);
-                
+                int terrainHeight = Mathf.RoundToInt(heightMap[x, z] * terrainHeightScale);
+
                 // Generar capas
                 for (int y = 0; y <= terrainHeight; y++)
                 {
-                    GenerateBlock(x, y, z, terrainHeight, levelContainer);
+                    GenerateBlock(x, y, z, terrainHeight, currentLevelContainer);
                 }
 
                 // Generar recursos y elementos adicionales solo en la superficie
                 if (Random.Range(0, 100) < itemSpawnPercentage && IsPositionValid(x, z, minItemSpacing))
                 {
                     Vector3 itemPos = new Vector3(x * roomSize, (terrainHeight + 1) * roomSize, z * roomSize);
-                    SpawnItem(itemPos, levelContainer);
+                    SpawnItem(itemPos, currentLevelContainer);
                 }
-                
+
                 if (Random.Range(0, 100) < enemySpawnPercentage && IsPositionValid(x, z, minEnemySpacing))
                 {
-                    Vector3 enemyPos = new Vector3(x * roomSize, (terrainHeight + 1) * roomSize, z * roomSize);
-                    SpawnEnemy(enemyPos, levelContainer);
+                    Vector3 enemyPos = new Vector3(x * roomSize, (terrainHeight + 1.5f) * roomSize, z * roomSize);
+                    SpawnEnemy(enemyPos, currentLevelContainer);
                 }
             }
         }
 
         // Generar paredes exteriores
-        GenerateWalls(levelContainer);
+        GenerateWalls(currentLevelContainer);
 
         // Generar techo si está activado
         if (generateCeiling)
         {
-            GenerateCeiling(levelContainer);
+            GenerateCeiling(currentLevelContainer);
         }
 
         // Añadir NavMeshSurface si no existe
         if (navMeshSurface == null)
         {
-            navMeshSurface = levelContainer.AddComponent<NavMeshSurface>();
+            navMeshSurface = currentLevelContainer.AddComponent<NavMeshSurface>();
             navMeshSurface.collectObjects = CollectObjects.All;
             navMeshSurface.useGeometry = NavMeshCollectGeometry.PhysicsColliders;
         }
@@ -140,10 +160,10 @@ public class LevelCreator : MonoBehaviour
     {
         // Esperar a que todos los objetos estén en su lugar
         yield return new WaitForSeconds(navMeshBakeDelay);
-        
+
         // Construir el NavMesh
         navMeshSurface.BuildNavMesh();
-        
+
         // Añadir NavMeshAgent a los enemigos
         SetupEnemyNavigation();
     }
@@ -177,7 +197,7 @@ public class LevelCreator : MonoBehaviour
                 float zCoord = (float)z * noiseScale + offsetZ;
                 // Ajusta el ruido para que esté entre baseGroundHeight y maxTerrainHeight
                 float noise = Mathf.PerlinNoise(xCoord, zCoord);
-                heightMap[x,z] = Mathf.Lerp(baseGroundHeight, maxTerrainHeight, noise);
+                heightMap[x, z] = Mathf.Lerp(baseGroundHeight, maxTerrainHeight, noise);
             }
         }
 
@@ -210,7 +230,7 @@ public class LevelCreator : MonoBehaviour
             block = Instantiate(stonePrefab, position, Quaternion.identity);
             AddToGrid(new Vector2Int(x, z), block, BlockType.Stone);
         }
-        
+
         block.transform.parent = container.transform;
     }
 
@@ -222,7 +242,7 @@ public class LevelCreator : MonoBehaviour
             Quaternion.identity
         );
         item.transform.parent = container.transform;
-        AddToGrid(new Vector2Int((int)(position.x/roomSize), (int)(position.z/roomSize)), item, BlockType.Item);
+        AddToGrid(new Vector2Int((int)(position.x / roomSize), (int)(position.z / roomSize)), item, BlockType.Item);
     }
 
     private void SpawnEnemy(Vector3 position, GameObject container)
@@ -233,7 +253,7 @@ public class LevelCreator : MonoBehaviour
             Quaternion.identity
         );
         enemy.transform.parent = container.transform;
-        AddToGrid(new Vector2Int((int)(position.x/roomSize), (int)(position.z/roomSize)), enemy, BlockType.Enemy);
+        AddToGrid(new Vector2Int((int)(position.x / roomSize), (int)(position.z / roomSize)), enemy, BlockType.Enemy);
     }
 
     private void GenerateObstacle(int x, int z, GameObject container)
@@ -316,7 +336,7 @@ public class LevelCreator : MonoBehaviour
     public Dictionary<Vector2Int, List<GameObject>> GetObjectsInRadius(Vector2Int center, int radius)
     {
         Dictionary<Vector2Int, List<GameObject>> result = new Dictionary<Vector2Int, List<GameObject>>();
-        
+
         for (int x = -radius; x <= radius; x++)
         {
             for (int z = -radius; z <= radius; z++)
@@ -328,7 +348,7 @@ public class LevelCreator : MonoBehaviour
                 }
             }
         }
-        
+
         return result;
     }
 
@@ -354,7 +374,7 @@ public class LevelCreator : MonoBehaviour
             {
                 Vector3 pos1 = new Vector3(x * roomSize, y * roomSize, -1 * roomSize);
                 Vector3 pos2 = new Vector3(x * roomSize, y * roomSize, length * roomSize);
-                
+
                 Instantiate(wallPrefab, pos1, Quaternion.identity).transform.parent = container.transform;
                 Instantiate(wallPrefab, pos2, Quaternion.identity).transform.parent = container.transform;
                 AddToGrid(new Vector2Int(x, -1), wallPrefab, BlockType.Wall);
@@ -369,7 +389,7 @@ public class LevelCreator : MonoBehaviour
             {
                 Vector3 pos1 = new Vector3(-1 * roomSize, y * roomSize, z * roomSize);
                 Vector3 pos2 = new Vector3(width * roomSize, y * roomSize, z * roomSize);
-                
+
                 Instantiate(wallPrefab, pos1, Quaternion.identity).transform.parent = container.transform;
                 Instantiate(wallPrefab, pos2, Quaternion.identity).transform.parent = container.transform;
                 AddToGrid(new Vector2Int(-1, z), wallPrefab, BlockType.Wall);
@@ -391,4 +411,27 @@ public class LevelCreator : MonoBehaviour
             }
         }
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(LevelCreator))]
+    public class LevelCreatorEditor : Editor
+    {
+        public override void OnInspectorGUI()
+        {
+            DrawDefaultInspector();
+
+            LevelCreator levelCreator = (LevelCreator)target;
+
+            if (GUILayout.Button("Generate Level"))
+            {
+                levelCreator.GenerateLevel();
+            }
+
+            if (GUILayout.Button("Destroy Level"))
+            {
+                levelCreator.DestroyCurrentLevel();
+            }
+        }
+    }
+#endif
 }
