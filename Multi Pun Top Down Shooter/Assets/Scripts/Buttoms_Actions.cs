@@ -39,4 +39,11 @@ public class Buttoms_Actions : MonoBehaviour
             targetObject.SetActive(state);
         }
     }
+
+    public void QuitGame()
+    {
+        Debug.Log("Exit Game");
+        //Application.Quit();
+        
+    }
 }
