@@ -39,6 +39,6 @@ public class NetworkManager : MonoBehaviourPunCallbacks
         // Obtener una posición de spawn aleatoria
         Vector3 spawnPosition = SpawnPointManager.Instance.GetRandomSpawnPoint();
         // Instanciar al jugador en el punto de spawn
-        PhotonNetwork.Instantiate("Player", spawnPosition, Quaternion.identity);
+        PhotonNetwork.Instantiate("Player_1", spawnPosition, Quaternion.identity);
     }
 }
