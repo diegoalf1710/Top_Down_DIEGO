@@ -188,7 +188,7 @@ public class InteractiveItem : MonoBehaviourPun
     /// Maneja la interacción en 2D con monedas.
     /// </summary>
     /// <param name="other">Collider2D del objeto que entró en contacto</param>
-    private void OnTriggerEnter2D(Collider2D other)
+    public void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {

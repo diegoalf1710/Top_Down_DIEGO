@@ -17,6 +17,9 @@ public class PlayerShooting : MonoBehaviourPun
     // IMPORTANTE: Este prefab debe estar ubicado en la carpeta Resources del proyecto
     public GameObject bulletPrefab;
 
+    // Componente AudioSource para reproducir el sonido del disparo
+    public AudioSource shootSound;
+
     // Se ejecuta cada frame para verificar si el jugador quiere disparar
     void Update()
     {
@@ -31,6 +34,12 @@ public class PlayerShooting : MonoBehaviourPun
     // Crea una nueva bala en la red y la inicializa con los parámetros necesarios
     void Shoot()
     {
+        // Reproduce el sonido del disparo si el componente está asignado
+        if (shootSound != null)
+        {
+            shootSound.Play();
+        }
+
         // Instancia la bala en la red usando PhotonNetwork.Instantiate
         // Solo el jugador local (dueño del PhotonView) ejecuta esta lógica
         GameObject bullet = PhotonNetwork.Instantiate(bulletPrefab.name, firePoint.position, firePoint.rotation);

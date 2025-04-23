@@ -1,61 +1,84 @@
 using UnityEngine;
 using TMPro;
 using Photon.Pun;
+using Unity.VisualScripting;
 
-// Clase que maneja la interfaz de usuario del jugador, incluyendo la visualización
-// de la salud y las monedas. Hereda de MonoBehaviourPun para funcionalidad multijugador.
 public class PlayerUIManager : MonoBehaviourPun
 {
-    // Referencias a los objetos de UI que muestran la información
-    public GameObject healthTextObject;
-    public GameObject coinsTextObject;
-    
-    // Componentes de texto para mostrar la salud y monedas
-    public TextMeshProUGUI healthText;
-    public TextMeshProUGUI coinsText;
-    public int coins = 0;
+    private TextMeshProUGUI coinsText;
+    private TextMeshProUGUI lifeText;
+    private int coins = 0;
+    private PlayerHealth playerHealth;
 
-    // Se llama cuando se inicializa el script
-    // Obtiene las referencias necesarias a los componentes de texto
-    private void Awake()
-    {
-        // Obtener los componentes TextMeshProUGUI de los GameObjects
-        if (healthTextObject != null)
-            healthText = healthTextObject.GetComponent<TextMeshProUGUI>();
-        
-        if (coinsTextObject != null)
-            coinsText = coinsTextObject.GetComponent<TextMeshProUGUI>();
-    }
-
-    // Se llama al inicio del juego
-    // Inicializa los valores de salud y monedas si este es el jugador local
     private void Start()
     {
         if (photonView.IsMine)
         {
-            UpdateHealth(100); // Inicializar con vida completa
-            UpdateCoins(0);    // Inicializar monedas en 0
+            // Obtener referencia al PlayerHealth
+            playerHealth = GetComponent<PlayerHealth>();
+            if (playerHealth == null)
+            {
+                Debug.LogWarning("No se encontró el componente PlayerHealth");
+            }
+
+            // Buscar el texto de monedas por tag
+            GameObject coinsTextObj = GameObject.FindGameObjectWithTag("coins_text");
+            if (coinsTextObj != null)
+            {
+                coinsText = coinsTextObj.GetComponent<TextMeshProUGUI>();
+                UpdateCoins(0);
+            }
+            else
+            {
+                Debug.LogWarning("No se encontró objeto con tag 'coins_text'");
+            }
+
+            // Buscar el texto de vida por tag
+            GameObject lifeTextObj = GameObject.FindGameObjectWithTag("life_text");
+            if (lifeTextObj != null)
+            {
+                lifeText = lifeTextObj.GetComponent<TextMeshProUGUI>();
+                UpdateHealth(playerHealth != null ? playerHealth.currentHealth : 100);
+            }
+            else
+            {
+                Debug.LogWarning("No se encontró objeto con tag 'life_text'");
+            }
         }
     }
 
-    // Actualiza el texto de salud en la UI
-    // currentHealth: valor actual de la salud del jugador
-    public void UpdateHealth(int currentHealth)
+    void Update()
     {
-        if (photonView.IsMine && healthText != null)
+        if (photonView.IsMine && lifeText != null && playerHealth != null)
         {
-            healthText.text = "HP: " + currentHealth.ToString();
+            lifeText.text = "HP: " + playerHealth.currentHealth.ToString();
         }
     }
 
-    // Actualiza el contador de monedas en la UI
-    // amount: cantidad de monedas a añadir (se multiplica por 10)
+    private void OnTriggerEnter(Collider other)
+    {
+        if (photonView.IsMine && other.CompareTag("Coin"))
+        {
+            UpdateCoins(1);
+            Destroy(other.gameObject);
+        }
+    }
+
     public void UpdateCoins(int amount)
     {
         if (photonView.IsMine && coinsText != null)
         {
-            coins += amount * 10; // Multiplicar por 10 cada moneda recogida
+            coins += amount * 10;
             coinsText.text = "Coins: " + coins.ToString();
+        }
+    }
+
+    public void UpdateHealth(int health)
+    {
+        if (photonView.IsMine && lifeText != null)
+        {
+            lifeText.text = "HP: " + playerHealth.currentHealth.ToString();
+            Debug.Log("Vida actualizada: " + playerHealth.currentHealth.ToString());
         }
     }
 }

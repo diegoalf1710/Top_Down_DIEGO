@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviourPun
         gameOverPanel.SetActive(false);
         if (playerUIManager != null)
         {
-            playerUIManager.UpdateHealth(100);
+            //playerUIManager.UpdateHealth(100);
         }
     }
 
