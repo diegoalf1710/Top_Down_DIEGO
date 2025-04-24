@@ -2,10 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class Buttoms_Actions : MonoBehaviour
 {
     public GameObject targetObject;
+    public TMP_InputField playerNameInput;
+    public TextMeshProUGUI playerNameText;
+    private string playerName;
 
     // Start is called before the first frame update
     void Start()
@@ -45,5 +50,19 @@ public class Buttoms_Actions : MonoBehaviour
         Debug.Log("Exit Game");
         //Application.Quit();
         
+    }
+
+    public void SetPlayerName()
+    {
+        if (playerNameInput != null)
+        {
+            playerName = playerNameInput.text;
+            if (playerNameText != null)
+            {
+                playerNameText.text = playerName;
+            }
+            PlayerPrefs.SetString("PlayerName", playerName);
+            PlayerPrefs.Save();
+        }
     }
 }

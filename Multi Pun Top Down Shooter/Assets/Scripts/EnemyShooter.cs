@@ -1,5 +1,6 @@
 using UnityEngine;
 using Photon.Pun;
+using System.Collections;
 
 /// <summary>
 /// Controla el comportamiento de los enemigos que disparan en el juego.
@@ -13,6 +14,12 @@ public class EnemyShooter : MonoBehaviourPun
     public float fireRate = 1f;
     public float detectionRange = 10f;
     public float rotationSpeed = 2f;
+
+    [Header("Configuración de Audio")]
+    public AudioSource shootSound;
+
+    [Header("Configuración de VFX")]
+    public ParticleSystem deathParticleSystem;
 
     private float nextFireTime = 0f;
     private GameObject targetPlayer;
@@ -111,6 +118,11 @@ public class EnemyShooter : MonoBehaviourPun
                 Quaternion.LookRotation(direction)
             );
 
+            if (shootSound != null)
+            {
+                shootSound.Play();
+            }
+
             Projectile projectileComponent = projectile.GetComponent<Projectile>();
             if (projectileComponent != null)
             {
@@ -124,10 +136,25 @@ public class EnemyShooter : MonoBehaviourPun
         }
     }
 
+    public void PlayDeathEffect()
+    {
+        if (deathParticleSystem != null)
+        {
+            deathParticleSystem.Play();
+            Debug.Log("Efecto de muerte reproducido.");
+        }
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRange);
+    }
+
+    private IEnumerator DestroyAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Destroy(gameObject);
     }
 
     void OnTriggerEnter(Collider other)
@@ -135,7 +162,8 @@ public class EnemyShooter : MonoBehaviourPun
         if (other.CompareTag("Bullet_2"))
         {
             Debug.Log("Hity");
-            Destroy(gameObject);
+            PlayDeathEffect();
+            StartCoroutine(DestroyAfterDelay(0.5f)); // 1 segundos de retraso
         }
     }
 }

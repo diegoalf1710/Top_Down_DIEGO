@@ -28,7 +28,7 @@ public class CoinCollector : MonoBehaviourPun
     /// Si es el jugador local, actualiza el contador de monedas y destruye la moneda en la red.
     /// </summary>
     /// <param name="other">El colisionador del objeto con el que se produce el contacto</param>
-    private void OnTriggerEnter2D(Collider2D other)
+    public void OnTriggerEnter2D(Collider2D other)
     {
         if (!photonView.IsMine) return;
 
