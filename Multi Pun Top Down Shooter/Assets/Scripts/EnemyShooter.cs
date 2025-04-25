@@ -24,9 +24,6 @@ public class EnemyShooter : MonoBehaviourPun
     private float nextFireTime = 0f;
     private GameObject targetPlayer;
 
-    public GameObject muzzleFlashPrefab;
-    public Transform muzzleFlashPoint;
-
     private void Start()
     {
         transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
@@ -109,12 +106,6 @@ public class EnemyShooter : MonoBehaviourPun
 
     void Shoot()
     {
-        GameObject muzzleFlash = Instantiate(muzzleFlashPrefab, muzzleFlashPoint.position, muzzleFlashPoint.rotation);
-        Destroy(muzzleFlash, 0.5f); // Destruir el efecto de destello después de 0.5 segundos
-
-        GameObject light = Instantiate(muzzleFlashPrefab, muzzleFlashPoint.position, muzzleFlashPoint.rotation);
-        Destroy(light, 0.5f); // Destruir el efecto de destello después de 0.5 segundos
-        
         if (targetPlayer == null || projectilePrefab == null || firePoint == null) return;
 
         Vector3 direction = (targetPlayer.transform.position - firePoint.position).normalized;
