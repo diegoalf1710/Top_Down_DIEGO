@@ -423,31 +423,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: ShootMuszzle
       objectReference: {fileID: 0}
-    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
-        type: 3}
-      propertyPath: lengthInSec
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
-        type: 3}
-      propertyPath: EmissionModule.m_BurstCount
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
-        type: 3}
-      propertyPath: EmissionModule.m_Bursts.Array.size
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
-        type: 3}
-      propertyPath: EmissionModule.rateOverTime.scalar
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
-        type: 3}
-      propertyPath: EmissionModule.rateOverDistance.scalar
-      value: 20
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
