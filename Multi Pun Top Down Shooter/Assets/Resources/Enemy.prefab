@@ -498,6 +498,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4477764001891522985}
     m_Modifications:
+    - target: {fileID: 17367365556516827, guid: ae7d49295d481434d882d96bb03823fc,
+        type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    - target: {fileID: 17367365556516827, guid: ae7d49295d481434d882d96bb03823fc,
+        type: 3}
+      propertyPath: m_RenderMode
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 327705955346987323, guid: ae7d49295d481434d882d96bb03823fc,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -552,6 +562,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ShootMuszzle
+      objectReference: {fileID: 0}
+    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
+        type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 1.77
+      objectReference: {fileID: 0}
+    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
+        type: 3}
+      propertyPath: InitialModule.startSize.minMaxState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
+        type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2929297706237188984, guid: ae7d49295d481434d882d96bb03823fc,
+        type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -628,6 +658,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8134667007107732436, guid: f49df967e00a43340ad5a2c0c5088b90,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: a5b565bc8032a7e43bc4dd2a4f13c8f2, type: 2}
     - target: {fileID: 919132149155446097, guid: f49df967e00a43340ad5a2c0c5088b90,
         type: 3}
       propertyPath: m_Name
